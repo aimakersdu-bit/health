@@ -10,6 +10,9 @@ spring:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
+  kafka:
+    # Minimal config to allow app to start without a real broker, though plugin will fail if connected
+    bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
 
 management:
   endpoint:
@@ -17,6 +20,11 @@ management:
       show-details: always
       probes:
         enabled: true
+      group:
+        liveness:
+          include: livenessState, livenessPluginIndicator
+        readiness:
+          include: readinessState, readinessPluginIndicator
   endpoints:
     web:
       exposure:
@@ -26,3 +34,8 @@ management:
       enabled: true
     readinessstate:
       enabled: true
+
+health:
+  plugin:
+    diagnostics:
+      path: target/diagnostics # Use target for safe write in dev/test
